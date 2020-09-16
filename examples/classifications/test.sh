@@ -1,0 +1,1 @@
+python ./run_clue_task_electra_electra_tiny_grl_generator.py --task_name 'afqmc,cmnli,csl,iflytek,tnews,wsc' --gpu_id "5"
