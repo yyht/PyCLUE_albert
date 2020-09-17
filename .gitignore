@@ -1,1 +1,3 @@
 PyCLUE/datasets/*
+*.pyc
+PyCLUE/task_outputs/*
