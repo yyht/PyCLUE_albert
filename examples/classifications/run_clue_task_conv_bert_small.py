@@ -57,7 +57,7 @@ for task_name in FLAGS.task_name.split(","):
 		# train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 5e-4
+		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
 		configs["num_train_epochs"] = 10.0
 	elif task_name == 'tnews':
@@ -65,7 +65,7 @@ for task_name in FLAGS.task_name.split(","):
 		# train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 3e-4
+		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
 		configs["num_train_epochs"] = 10.0
 	elif task_name == 'wsc':
@@ -108,7 +108,7 @@ for task_name in FLAGS.task_name.split(","):
 	configs["pretrained_lm_name"] = "roberta_small_span_mask_conv"
 	configs["vocab_file"] = "/data/albert/conv_bert_small/vocab.txt"
 	configs["bert_config_file"] = "/data/albert/conv_bert_small/bert_config_small_conv.json"
-	configs["init_checkpoint"] = "/data/albert/conv_bert_small/conv_roberta_small_model.ckpt-970000"
+	configs["init_checkpoint"] = "/data/albert/conv_bert_small/conv_roberta_small_model.ckpt-1432250"
 	configs["verbose"] = 1
 
 	configs["do_train"] = True
