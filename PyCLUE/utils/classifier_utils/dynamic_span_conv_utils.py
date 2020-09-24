@@ -1,11 +1,10 @@
 
 import tensorflow as tf
 import numpy as np
-from utils.bert import bert_utils
-from utils.textcnn import position_utils
-from utils.bert import dropout_utils
+from . import bert_utils
+from . import dropout_utils
 
-stable_dropout = dropout_utils.ReuseDropout()
+# stable_dropout = dropout_utils.ReuseDropout()
 
 def dropout(input_tensor, dropout_prob, dropout_name=None):
 	"""Perform dropout.
@@ -20,10 +19,10 @@ def dropout(input_tensor, dropout_prob, dropout_name=None):
 	"""
 	if dropout_prob is None or dropout_prob == 0.0:
 		return tf.identity(input_tensor)
-	if dropout_name:
-		output = stable_dropout.dropout(input_tensor, dropout_prob, dropout_name)
-	else:
-		output = tf.nn.dropout(input_tensor, 1.0 - dropout_prob)
+	# if dropout_name:
+	# 	output = stable_dropout.dropout(input_tensor, dropout_prob, dropout_name)
+	# else:
+	output = tf.nn.dropout(input_tensor, 1.0 - dropout_prob)
 	return output
 
 def create_initializer(initializer_range=0.02):
