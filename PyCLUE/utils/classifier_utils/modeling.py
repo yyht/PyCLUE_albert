@@ -50,6 +50,7 @@ class BertConfig(object):
 							 attention_fixed_size=None,
 							 model_type="transformer",
 							 conv_bert=True,
+							 kernel_size=9,
 							 num_attention_heads_scale=False):
 		"""Constructs BertConfig.
 
@@ -92,7 +93,8 @@ class BertConfig(object):
 		self.model_type = model_type
 		self.conv_bert = conv_bert
 		self.num_attention_heads_scale = num_attention_heads_scale
-
+		self.kernel_size = kernel_size
+		
 	@classmethod
 	def from_dict(cls, json_object):
 		"""Constructs a `BertConfig` from a Python dictionary of parameters."""
