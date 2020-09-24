@@ -94,7 +94,7 @@ class BertConfig(object):
 		self.conv_bert = conv_bert
 		self.num_attention_heads_scale = num_attention_heads_scale
 		self.kernel_size = kernel_size
-		
+
 	@classmethod
 	def from_dict(cls, json_object):
 		"""Constructs a `BertConfig` from a Python dictionary of parameters."""
@@ -263,7 +263,9 @@ class BertModel(object):
 						dropout_name=None,
 						structural_attentions="none",
 						is_training=is_training,
-						model_config={},
+						model_config={
+							"kernel_size":config.kernel_size
+						},
 						from_mask=input_mask,
 						to_mask=input_mask)
 
