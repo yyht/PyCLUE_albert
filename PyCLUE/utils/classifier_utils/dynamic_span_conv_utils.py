@@ -1,7 +1,11 @@
 
 import tensorflow as tf
 import numpy as np
-from . import bert_utils
+from utils.bert import bert_utils
+from utils.textcnn import position_utils
+from utils.bert import dropout_utils
+
+stable_dropout = dropout_utils.ReuseDropout()
 
 def dropout(input_tensor, dropout_prob, dropout_name=None):
 	"""Perform dropout.
@@ -16,7 +20,10 @@ def dropout(input_tensor, dropout_prob, dropout_name=None):
 	"""
 	if dropout_prob is None or dropout_prob == 0.0:
 		return tf.identity(input_tensor)
-	output = tf.nn.dropout(input_tensor, 1.0 - dropout_prob)
+	if dropout_name:
+		output = stable_dropout.dropout(input_tensor, dropout_prob, dropout_name)
+	else:
+		output = tf.nn.dropout(input_tensor, 1.0 - dropout_prob)
 	return output
 
 def create_initializer(initializer_range=0.02):
@@ -35,7 +42,6 @@ def depthwise_separable_convolution(inputs, kernel_size, num_filters,
 									dilation_rate = 1):
 	outputs = tf.expand_dims(inputs, 2) # batch, seq, 1, dim
 	shapes = bert_utils.get_shape_list(outputs, expected_rank=[4])
-	print("===input shapes===", shapes)
 	with tf.variable_scope(scope, reuse = reuse):
 		depthwise_filter = tf.get_variable("depthwise_filter",
 										(kernel_size[0], kernel_size[1], shapes[-1], 1),
@@ -128,7 +134,7 @@ def dynamic_conv_layer(from_tensor,
 				kernel_size=10,
 				strides=1,
 				dilation_rate=1,
-				hidden_size=None):
+				share_or_not=True):
 	
 	initializer = create_initializer(initializer_range=0.02)
 
@@ -175,7 +181,14 @@ def dynamic_conv_layer(from_tensor,
 	from_tensor_2d = bert_utils.reshape_to_matrix(from_tensor)
 	to_tensor_2d = bert_utils.reshape_to_matrix(to_tensor)
 
-	# `query_layer` = [B*F, N*H]
+	# query_layer = [B*F, N*H]
+	if share_or_not:
+		query_layer_name = "query"
+		value_layer_name = "value"
+	else:
+		query_layer_name = "conv_query"
+		value_layer_name = "conv_value"
+
 	query_layer = tf.layers.dense(
 			from_tensor_2d,
 			num_attention_heads * attention_head_size,
@@ -183,7 +196,7 @@ def dynamic_conv_layer(from_tensor,
 			name="query",
 			kernel_initializer=create_initializer(initializer_range))
 
-	# `value_layer` = [B*T, N*H]
+	# value_layer = [B*T, N*H]
 	value_layer = tf.layers.dense(
 			from_tensor_2d,
 			num_attention_heads * attention_head_size,
@@ -191,7 +204,7 @@ def dynamic_conv_layer(from_tensor,
 			name="value",
 			kernel_initializer=create_initializer(initializer_range))
 
-	# `query_layer` = [B, N, F, H]
+	# query_layer = [B, N, F, H]
 	query_layer = transpose_for_scores(query_layer, batch_size,
 									 num_attention_heads, 
 									 from_seq_length,
@@ -208,14 +221,9 @@ def dynamic_conv_layer(from_tensor,
 	if len(from_shape) == 3:
 		from_tensor *= from_tensor_mask
 	else:
-		if not hidden_size:
-			from_tensor = tf.reshape(
-					from_tensor,
-					[batch_size, from_seq_length, -1])
-		else:
-			from_tensor = tf.reshape(
-					from_tensor,
-					[batch_size, from_seq_length, hidden_size])
+		from_tensor = tf.reshape(
+				from_tensor,
+				[batch_size, from_seq_length, -1])
 		from_tensor *= from_tensor_mask
 	conv_key_layer = gated_conv1d_op(from_tensor, 
 								filters=num_attention_heads * attention_head_size, 
@@ -306,8 +314,6 @@ def dynamic_conv_layer(from_tensor,
 	tf.logging.info(conv_span_output)
 	conv_span_output = tf.transpose(conv_span_output, [0,3,1,2,4])
 	tf.logging.info("==reshape conv_span_output==")
-	tf.logging.info(conv_span_output)
-	tf.logging.info("==reshape conv_span_output==")
 
 	# dynamic_conv_kernel: [batch_size, num_attention_heads, from_seq_length, kernel_size]
 	# conv_span_output:    [batch_size, num_attention_heads, from_seq_length, kernel_size, attention_head_size]
@@ -315,7 +321,6 @@ def dynamic_conv_layer(from_tensor,
 	tf.logging.info(conv_output)
 	tf.logging.info("==conv_output==")
 
-	# [batch_size, num_attention_heads, from_seq_length, attention_head_size]
 	# [batch_size, num_attention_heads, from_seq_length, attention_head_size]
 	conv_output = tf.transpose(conv_output, [0, 2, 1, 3])
 	conv_output *= tf.expand_dims(from_tensor_mask, axis=-1)
