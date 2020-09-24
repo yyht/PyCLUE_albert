@@ -1053,7 +1053,7 @@ def attention_layer(from_tensor,
 		else:
 			mode = None
 
-		attention_scores = attention_selection_utils.attention_group_sampling(
+		attention_scores = structural_attention.attention_group_sampling(
 							from_tensor, 
 							to_tensor,
 							attention_mask,
