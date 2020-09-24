@@ -2,7 +2,6 @@
 import tensorflow as tf
 import numpy as np
 from . import bert_utils
-from . import dropout_utils
 
 # stable_dropout = dropout_utils.ReuseDropout()
 
