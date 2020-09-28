@@ -51,7 +51,8 @@ class BertConfig(object):
 							 model_type="transformer",
 							 conv_bert=True,
 							 kernel_size=9,
-							 num_attention_heads_scale=False):
+							 num_attention_heads_scale=False,
+							 share_or_not=True):
 		"""Constructs BertConfig.
 
 		Args:
@@ -94,6 +95,7 @@ class BertConfig(object):
 		self.conv_bert = conv_bert
 		self.num_attention_heads_scale = num_attention_heads_scale
 		self.kernel_size = kernel_size
+		self.share_or_not = share_or_not
 
 	@classmethod
 	def from_dict(cls, json_object):
@@ -264,7 +266,8 @@ class BertModel(object):
 						structural_attentions="none",
 						is_training=is_training,
 						model_config={
-							"kernel_size":config.kernel_size
+							"kernel_size":config.kernel_size,
+							"share_or_not":config.share_or_not
 						},
 						from_mask=input_mask,
 						to_mask=input_mask)
@@ -1555,7 +1558,8 @@ def conv_transformer_model(input_tensor,
 							kernel_size=model_config.get('kernel_size', 9),
 							strides=model_config.get('stride', 1),
 							dilation_rate=model_config.get('stride', 1),
-                                                        hidden_size=hidden_size)
+                            hidden_size=hidden_size,
+                            share_or_not=model_config.get('share_or_not', True))
 
 					attention_head = tf.concat([attention_head, conv_head], axis=-1)
 
