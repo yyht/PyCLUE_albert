@@ -492,8 +492,8 @@ def create_model(
 			input_mask=input_mask,
 			token_type_ids=segment_ids,
 			use_one_hot_embeddings=use_one_hot_embeddings,
-			num_train_steps=num_train_steps,
-			structural_attentions="structural_attentions"
+                        num_train_steps=num_train_steps,
+			structural_attentions="none" #"structural_attentions"
 		)
 	elif model_type.startswith("albert"):
 		model = albert_modeling.AlBertModel(
