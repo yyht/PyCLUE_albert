@@ -39,6 +39,120 @@ def get_initializer(net_config):
 			raise ValueError("Initializer {} not supported".format(net_config.init))
 		return initializer
 
+class ModelConfig(object):
+	"""ModelConfig contains fixed hyperparameters of a Funnel-Transformer."""
+
+	keys = ["block_size", "vocab_size", "d_embed", "d_model", "n_head", "d_head",
+					"d_inner", "ff_activation", "dropout", "dropatt", "dropact",
+					"init", "init_std", "init_range", "rel_attn_type", "separate_cls",
+					"pooling_type", "pooling_size", "pool_q_only", "decoder_size",
+					"if_skip_connetion", "pretrain_loss", "corrupted",
+					"denoise_mode", 'use_bfloat16', "verbose", "truncate_seq",
+					"seg_id_cls", "scope", "hidden_size", 'initializer_range',
+					"hidden_act", "max_position_embeddings", "num_hidden_layers",
+					"ln_type"]
+
+	def __init__(self, block_size, vocab_size, d_embed, d_model, n_head,
+			 d_head, d_inner, dropout, dropatt, dropact, ff_activation,
+			 init="truncated_normal", init_std=0.02, init_range=0.1,
+			 rel_attn_type="factorized", separate_cls=True,
+			 pooling_type="mean", pooling_size=2, pool_q_only=True,
+			 decoder_size="0",
+			 if_skip_connetion=False,
+				pretrain_loss="ae",
+				corrupted=False,
+				denoise_mode="denoise",
+				use_bfloat16=False,
+				verbose=False,
+				truncate_seq=True,
+				seg_id_cls=2,
+				scope="model", 
+				hidden_size=768,
+				initializer_range=0.01,
+				hidden_act='gelu',
+				max_position_embeddings=512,
+				num_hidden_layers=4,
+				ln_type="post_ln"):
+
+		"""Initialize model config."""
+		self.vocab_size = vocab_size
+		self.if_skip_connetion = if_skip_connetion
+		self.corrupted = corrupted
+		self.denoise_mode = denoise_mode
+		self.use_bfloat16 = use_bfloat16
+		self.truncate_seq = truncate_seq
+		self.scope = scope
+		self.pretrain_loss = pretrain_loss
+		self.verbose = verbose
+		self.d_embed = d_embed
+		self.d_model = d_model
+		self.n_head = n_head
+		self.d_head = d_head
+		self.d_inner = d_inner
+		self.hidden_size = self.d_model
+		self.seg_id_cls = seg_id_cls
+		self.dropout = dropout
+		self.dropatt = dropatt
+		self.dropact = dropact
+		self.ff_activation = ff_activation
+		self.hidden_act = ff_activation
+		self.init = init
+		self.init_std = init_std
+		self.init_range = init_range
+		self.initializer_range = initializer_range
+		self.rel_attn_type = rel_attn_type
+		self.block_size = block_size
+		self.decoder_size = decoder_size
+		self.pooling_type = pooling_type
+		self.pooling_size = pooling_size
+		self.pool_q_only = pool_q_only
+		self.separate_cls = separate_cls
+		self.max_position_embeddings = max_position_embeddings
+		self.num_hidden_layers = num_hidden_layers
+		self.ln_type = ln_type
+
+	@staticmethod
+	def init_from_text(file_path, sep_symbol=None):
+		"""Initialize ModelConfig from a text file."""
+		tf.logging.info("Initialize ModelConfig from text file %s.", file_path)
+		args = {}
+		with tf.io.gfile.GFile(file_path) as f:
+			for line in f:
+				k, v = line.strip().split(sep_symbol)
+				if k in ModelConfig.keys:
+					args[k] = v
+				else:
+					tf.logging.warning("Unused key %s", k)
+
+		args = ModelConfig.overwrite_args(args)
+		net_config = ModelConfig(**args)
+
+		return net_config
+
+	@staticmethod
+	def init_from_json(file_path):
+		"""Initialize ModelConfig from a json file."""
+		tf.logging.info("Initialize ModelConfig from json file %s.", file_path)
+		with tf.io.gfile.GFile(file_path) as f:
+			json_data = json.load(f)
+			json_data["rel_attn_type"] = "rel_shift"
+			tf.logging.info("Change rel_attn_type to `rel_shift` for non-TPU env.")
+		net_config = ModelConfig(**json_data)
+		return net_config
+
+	def to_json(self, json_path):
+		"""Save ModelConfig to a json file."""
+		tf.logging.info("Save ModelConfig to json file %s.", json_path)
+		json_data = {}
+		for key in ModelConfig.keys:
+			json_data[key] = getattr(self, key)
+
+		json_dir = os.path.dirname(json_path)
+		if not tf.io.gfile.exists(json_dir):
+			tf.io.gfile.makedirs(json_dir)
+		with tf.io.gfile.GFile(json_path, "w") as f:
+			json.dump(json_data, f, indent=4, sort_keys=True)
+
 
 class FunnelTFM(object):
 	def __init__(self,

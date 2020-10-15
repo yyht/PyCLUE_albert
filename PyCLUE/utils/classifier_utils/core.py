@@ -536,7 +536,7 @@ def create_model(
 			 reuse=None,
 			 num_train_steps=num_train_steps)
 	elif model_type.startswith("funnel_transformer"):
-		model = funnel_transformer_modeling.BertModel(
+		model = funnel_transformer_modeling.FunnelTFM(
 			bert_config=bert_config,
 			is_training=is_training,
 			input_ids=input_ids,
@@ -727,6 +727,8 @@ def run_classifier(processor, configs):
 		
 	if configs.pretrained_lm_name.startswith("light_dgcnn"):
 		bert_config = lightdgcnn_modeling.BertConfig.from_json_file(configs.bert_config_file)
+	elif configs.pretrained_lm_name.startswith("funnel_transformer"):
+		bert_config = funnel_transformer_modeling.ModelConfig.init_from_json(configs.bert_config_file)
 	else:
 		bert_config = modeling.BertConfig.from_json_file(configs.bert_config_file)
 	
