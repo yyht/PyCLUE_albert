@@ -59,7 +59,7 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 20.0
 	elif task_name == 'tnews':
 		configs["task_name"] = task_name
 		# train parameters
@@ -105,10 +105,10 @@ for task_name in FLAGS.task_name.split(","):
 	#     Or you can choose the following models:
 	#         bert, bert_wwm_ext, albert_xlarge, albert_large, albert_base, albert_base_ext, 
 	#         albert_small, albert_tiny, roberta, roberta_wwm_ext, roberta_wwm_ext_large
-	configs["pretrained_lm_name"] = "roberta_tiny_span_mask_conv_not_share_5"
-	configs["vocab_file"] = "/data/albert/conv_bert/conv_bert_tiny_not_share_5/vocab.txt"
-	configs["bert_config_file"] = "/data/albert/conv_bert/conv_bert_tiny_not_share_5/bert_config_tiny_conv_v1.json"
-	configs["init_checkpoint"] = "/data/albert/conv_bert/conv_bert_tiny_not_share_5/conv_roberta_tiny_v1_not_share_model.ckpt-1145800"
+	configs["pretrained_lm_name"] = "roberta_tiny_conv_bert_tiny_v1_new_5"
+	configs["vocab_file"] = "/data/albert/conv_bert_tiny_new_5/vocab.txt"
+	configs["bert_config_file"] = "/data/albert/conv_bert_tiny_new_5/bert_config_tiny_conv_v1.json"
+	configs["init_checkpoint"] = "/data/albert/conv_bert_tiny_new_5/conv_roberta_tiny_v1_new_model.ckpt-1145800"
 	configs["verbose"] = 1
 
 	configs["do_train"] = True
