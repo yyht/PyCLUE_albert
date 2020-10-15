@@ -209,7 +209,18 @@ def dynamic_conv_layer(from_tensor,
 									 from_seq_length,
 									 num_attention_heads, 
 									 attention_head_size)
-	
+
+	# add zeros-mask for conv same padding
+	from_query_mask = tf.expand_dims(from_mask, axis=1)
+	from_query_mask = tf.expand_dims(from_query_mask, axis=-1)
+	from_query_mask = tf.cast(from_query_mask, dtype=tf.float32)
+	query_layer *= from_query_mask
+
+	from_value_mask = tf.expand_dims(from_mask, axis=-1)
+	from_value_mask = tf.expand_dims(from_value_mask, axis=-1)
+	from_value_mask = tf.cast(from_value_mask, dtype=tf.float32)
+	value_layer *= from_value_mask
+
 	from_tensor_mask = tf.expand_dims(from_mask, axis=-1)
 	from_tensor_mask = tf.cast(from_tensor_mask, dtype=tf.float32)
 
@@ -251,7 +262,7 @@ def dynamic_conv_layer(from_tensor,
 						strides=strides,
 						dilation_rate=dilation_rate
 						)
-	
+
 	conv_key_layer *= from_tensor_mask
 
 	# [batch_size, from_seq_length, num_attention_heads, attention_head_size]
@@ -264,6 +275,10 @@ def dynamic_conv_layer(from_tensor,
 	conv_key_layer = tf.transpose(conv_key_layer, [0, 2, 1, 3])
 
 	# dynamic-kernel-generator
+	# [batch_size,
+	#  num_attention_heads, 
+	#  from_seq_length,
+	#  attention_head_size]
 	dynamic_kernel_generator = conv_key_layer * query_layer
 
 	# kernel-project-layer
@@ -338,8 +353,13 @@ def dynamic_conv_layer(from_tensor,
 	tf.logging.info("==conv_output==")
 
 	# [batch_size, num_attention_heads, from_seq_length, attention_head_size]
+	# [batch_size, from_seq_length, num_attention_heads, attention_head_size]
 	conv_output = tf.transpose(conv_output, [0, 2, 1, 3])
-	conv_output *= tf.expand_dims(from_tensor_mask, axis=-1)
+	# conv_output *= tf.expand_dims(from_tensor_mask, axis=-1)
+	conv_output_mask = tf.expand_dims(from_mask, axis=-1)
+	conv_output_mask = tf.expand_dims(conv_output_mask, axis=-1)
+	conv_output_mask = tf.cast(conv_output_mask, dtype=tf.float32)
+	conv_output *= conv_output_mask
 	if do_return_2d_tensor:
 		# `context_layer` = [B*F, N*V]
 		conv_output_layer = tf.reshape(
