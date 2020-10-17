@@ -305,9 +305,9 @@ class AdamBeliefWeightDecayOptimizer(tf.train.Optimizer):
                exclude_from_weight_decay=None,
                include_in_weight_decay=["r_s_bias", "r_r_bias", "r_w_bias"],
                layer_wise_lr_decay=0.8,
-               name="AdamWeightDecayOptimizer"):
+               name="AdamBeliefWeightDecayOptimizer"):
     """Constructs a AdamWeightDecayOptimizer."""
-    super(AdamWeightDecayOptimizer, self).__init__(False, name)
+    super(AdamBeliefWeightDecayOptimizer, self).__init__(False, name)
 
     self.learning_rate = learning_rate
     self.weight_decay_rate = weight_decay_rate
