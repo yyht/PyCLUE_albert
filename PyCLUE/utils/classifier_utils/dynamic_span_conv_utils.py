@@ -233,7 +233,7 @@ def dynamic_conv_layer(from_tensor,
 	else:
 		from_tensor = tf.reshape(
 				from_tensor,
-				[batch_size, from_seq_length, -1])
+				[batch_size, from_seq_length, hidden_size])
 		from_tensor *= from_tensor_mask
 
 	# conv_key_layer = gated_conv1d_op(from_tensor, 
