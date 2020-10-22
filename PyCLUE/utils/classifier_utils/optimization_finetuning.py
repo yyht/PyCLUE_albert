@@ -76,7 +76,7 @@ def create_optimizer(loss, init_lr, num_train_steps, num_warmup_steps, use_tpu,
                                     tvars, 
                                     task_name=task_name)
 
-  optimizer = AdamBeliefWeightDecayOptimizer(
+  optimizer = AdamWeightDecayOptimizer(
       learning_rate=learning_rate,
       weight_decay_rate=0.01,
       beta_1=0.9,
@@ -307,7 +307,7 @@ class AdamBeliefWeightDecayOptimizer(tf.train.Optimizer):
                layer_wise_lr_decay=0.8,
                name="AdamWeightDecayOptimizer"):
     """Constructs a AdamWeightDecayOptimizer."""
-    super(AdamWeightDecayOptimizer, self).__init__(False, name)
+    super(AdamBeliefWeightDecayOptimizer, self).__init__(False, name)
 
     self.learning_rate = learning_rate
     self.weight_decay_rate = weight_decay_rate
