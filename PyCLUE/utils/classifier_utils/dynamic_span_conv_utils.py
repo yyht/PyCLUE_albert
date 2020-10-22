@@ -184,6 +184,7 @@ def dynamic_conv_layer(from_tensor,
 		query_layer_name = "conv_query"
 		value_layer_name = "conv_value"
 
+	# query_layer = [B*T, N*H]
 	query_layer = tf.layers.dense(
 			from_tensor_2d,
 			num_attention_heads * attention_head_size,
@@ -199,54 +200,53 @@ def dynamic_conv_layer(from_tensor,
 			name=value_layer_name,
 			kernel_initializer=create_initializer(initializer_range))
 
-	# `query_layer` = [B, N, F, H]
+	# query_layer = [B, N, F, H]
 	query_layer = transpose_for_scores(query_layer, batch_size,
-									 num_attention_heads, 
 									 from_seq_length,
+									 num_attention_heads, 
 									 attention_head_size)
 
+	# query_layer = [B, F, N, H]
 	value_layer = transpose_for_scores(value_layer, batch_size,
 									 from_seq_length,
 									 num_attention_heads, 
 									 attention_head_size)
 
-	# add zeros-mask for conv same padding
-	from_query_mask = tf.expand_dims(from_mask, axis=1)
+	# add zeros-query-mask for conv same padding
+	from_query_mask = tf.expand_dims(from_mask, axis=-1)
 	from_query_mask = tf.expand_dims(from_query_mask, axis=-1)
 	from_query_mask = tf.cast(from_query_mask, dtype=tf.float32)
 	query_layer *= from_query_mask
 
-	from_value_mask = tf.expand_dims(from_mask, axis=-1)
-	from_value_mask = tf.expand_dims(from_value_mask, axis=-1)
-	from_value_mask = tf.cast(from_value_mask, dtype=tf.float32)
-	value_layer *= from_value_mask
-
+	# add zeros-value-mask for conv same padding
+	# from_value_mask = tf.expand_dims(from_mask, axis=-1)
+	# from_value_mask = tf.expand_dims(from_value_mask, axis=-1)
+	# from_value_mask = tf.cast(from_value_mask, dtype=tf.float32)
+	value_layer *= from_query_mask
+	
+	# add zeros-from_tensor-mask for conv same padding
 	from_tensor_mask = tf.expand_dims(from_mask, axis=-1)
 	from_tensor_mask = tf.cast(from_tensor_mask, dtype=tf.float32)
 
 	if len(from_shape) == 3:
 		from_tensor *= from_tensor_mask
 	else:
-		if not hidden_size:
-			from_tensor = tf.reshape(
-					from_tensor,
-					[batch_size, from_seq_length, -1])
-		else:
-			from_tensor = tf.reshape(
-					from_tensor,
-					[batch_size, from_seq_length, hidden_size])
+		from_tensor = tf.reshape(
+				from_tensor,
+				[batch_size, from_seq_length, -1])
 		from_tensor *= from_tensor_mask
+
 	# conv_key_layer = gated_conv1d_op(from_tensor, 
-	# 							filters=num_attention_heads * attention_head_size, 
-	# 							kernel_size=kernel_size, 
-	# 							padding="SAME", 
-	# 							activation=None, 
-	# 							strides=strides, 
-	# 							reuse=None, 
-	# 							name="glu_conv", 
-	# 							kernel_initializer=initializer,
-	# 							dilation_rate=dilation_rate,
-	# 							is_training=is_training)
+	#               filters=num_attention_heads * attention_head_size, 
+	#               kernel_size=kernel_size, 
+	#               padding="SAME", 
+	#               activation=None, 
+	#               strides=strides, 
+	#               reuse=None, 
+	#               name="glu_conv", 
+	#               kernel_initializer=initializer,
+	#               dilation_rate=dilation_rate,
+	#               is_training=is_training)
 
 	conv_key_layer = depthwise_separable_convolution(
 						inputs=from_tensor,
@@ -271,35 +271,37 @@ def dynamic_conv_layer(from_tensor,
 												from_seq_length,
 												num_attention_heads,
 												attention_head_size])
-	# [batch_size, num_attention_heads, from_seq_length, attention_head_size]
-	conv_key_layer = tf.transpose(conv_key_layer, [0, 2, 1, 3])
-
 	# dynamic-kernel-generator
-	# [batch_size,
-	#  num_attention_heads, 
-	#  from_seq_length,
-	#  attention_head_size]
 	dynamic_kernel_generator = conv_key_layer * query_layer
 
 	# kernel-project-layer
-	dynamic_kernel = tf.get_variable(
-				"dynamic_kernel",
-				shape=[num_attention_heads, kernel_size, attention_head_size],
-				initializer=create_initializer(initializer_range))
-
+	dynamic_kernel_generator = tf.reshape(dynamic_kernel_generator, 
+			[batch_size*from_seq_length, 
+			num_attention_heads*attention_head_size])
+	
+	dynamic_conv_kernel = tf.layers.dense(dynamic_kernel_generator, 
+										num_attention_heads*kernel_size,
+										name="dynamic_kernel_generation",
+										use_bias=False)
+	
 	# [batch_size, num_attention_heads, from_seq_length, attention_head_size]
 	# [num_attention_heads, kernel_size, attention_head_size]
-	dynamic_conv_kernel = tf.einsum("abcd,bfd->abcf", 
-									dynamic_kernel_generator, 
-									dynamic_kernel)
+	dynamic_conv_kernel = tf.reshape(dynamic_conv_kernel, 
+												[batch_size,
+												from_seq_length,
+												num_attention_heads,
+												kernel_size])
+	dynamic_conv_kernel = tf.transpose(dynamic_conv_kernel, 
+										[0,2,1,3])
 	# [batch_size, num_attention_heads, from_seq_length, kernel_size]
-	normalized_dynamic_kernel = tf.exp(tf.nn.log_softmax(dynamic_conv_kernel, axis=-1))
+	normalized_dynamic_kernel = tf.nn.softmax(dynamic_conv_kernel, axis=-1)
 	normalized_dynamic_kernel = dropout(normalized_dynamic_kernel, 
 										attention_probs_dropout_prob, 
 										dropout_name=dropout_name+"_conv")
 
 	indices_i = tf.range(from_seq_length+kernel_size-1, delta=1)
-	indices = tf.reverse(indices_i[0:kernel_size], axis=[-1])
+	# indices = tf.reverse(indices_i[0:kernel_size], axis=[-1])
+	indices = indices_i[0:kernel_size]
 	indices = tf.expand_dims(indices, axis=0)
 
 	batch_one = tf.ones((from_seq_length, 1), dtype=indices.dtype)
