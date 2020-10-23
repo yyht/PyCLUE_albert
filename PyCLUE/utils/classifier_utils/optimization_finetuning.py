@@ -76,7 +76,7 @@ def create_optimizer(loss, init_lr, num_train_steps, num_warmup_steps, use_tpu,
                                     tvars, 
                                     task_name=task_name)
 
-  optimizer = AdamBeliefWeightDecayOptimizer(
+  optimizer = AdamWeightDecayOptimizer(
       learning_rate=learning_rate,
       weight_decay_rate=0.01,
       beta_1=0.9,
