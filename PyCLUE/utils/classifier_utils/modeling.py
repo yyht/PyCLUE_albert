@@ -29,6 +29,7 @@ import tensorflow as tf
 from . import bert_utils
 from . import structural_attention
 from . import dynamic_span_conv_utils
+from . import dynamic_span_conv_utils_glu
 
 class BertConfig(object):
 	"""Configuration for `BertModel`."""
@@ -52,7 +53,8 @@ class BertConfig(object):
 							 conv_bert=True,
 							 kernel_size=9,
 							 num_attention_heads_scale=False,
-							 share_or_not=True):
+							 share_or_not=True,
+							 dynamic_cnn_type="conv_bert"):
 		"""Constructs BertConfig.
 
 		Args:
@@ -96,6 +98,7 @@ class BertConfig(object):
 		self.num_attention_heads_scale = num_attention_heads_scale
 		self.kernel_size = kernel_size
 		self.share_or_not = share_or_not
+		self.dynamic_cnn_type = dynamic_cnn_type
 
 	@classmethod
 	def from_dict(cls, json_object):
@@ -270,7 +273,8 @@ class BertModel(object):
 							"share_or_not":config.share_or_not
 						},
 						from_mask=input_mask,
-						to_mask=input_mask)
+						to_mask=input_mask,
+						dynamic_cnn_type=config.dynamic_cnn_type)
 
 			self.sequence_output = self.all_encoder_layers[-1]
 			# The "pooler" converts the encoded sequence tensor of shape
@@ -1421,7 +1425,8 @@ def conv_transformer_model(input_tensor,
 						is_training=False,
 						model_config={},
 						from_mask=None,
-						to_mask=None):
+						to_mask=None,
+						dynamic_cnn_type='conv_bert'):
 	"""Multi-headed, multi-layer Transformer from "Attention is All You Need".
 
 	This is almost an exact implementation of the original Transformer encoder.
@@ -1536,8 +1541,11 @@ def conv_transformer_model(input_tensor,
 							dropout_name=attention_dropout_name,
 							structural_attentions=structural_attentions_args,
 							is_training=is_training)
-
-					conv_head = dynamic_span_conv_utils.dynamic_conv_layer(
+					if dynamic_cnn_type == 'conv_bert':
+						dynamic_conv_api = dynamic_span_conv_utils.dynamic_conv_layer
+					elif dynamic_cnn_type == 'glu_conv_bert':
+						dynamic_conv_api = dynamic_span_conv_utils_glu.dynamic_conv_layer
+					conv_head = dynamic_conv_api(
 							from_tensor=layer_input,
 							to_tensor=layer_input,
 							attention_mask=attention_mask,
