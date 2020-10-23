@@ -41,7 +41,7 @@ for task_name in FLAGS.task_name.split(","):
 		# train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 3e-4
+		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
 		configs["num_train_epochs"] = 10.0
 	elif task_name == 'csl':
@@ -65,7 +65,7 @@ for task_name in FLAGS.task_name.split(","):
 		# train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 3e-4
+		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
 		configs["num_train_epochs"] = 10.0
 	elif task_name == 'wsc':
@@ -73,7 +73,7 @@ for task_name in FLAGS.task_name.split(","):
 		# train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 8
-		configs["learning_rate"] = 3e-4
+		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
 		configs["num_train_epochs"] = 10.0
 	elif task_name == 'lcqmc':
@@ -81,7 +81,7 @@ for task_name in FLAGS.task_name.split(","):
                 # train parameters
                 configs["max_seq_length"] = 128
                 configs["train_batch_size"] = 32
-                configs["learning_rate"] = 3e-4
+                configs["learning_rate"] = 1e-4
                 configs["warmup_proportion"] = 0.1
                 configs["num_train_epochs"] = 10.0
 	elif task_name == 'xnli':
@@ -89,7 +89,7 @@ for task_name in FLAGS.task_name.split(","):
                 # train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 3e-4
+		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
 		configs["num_train_epochs"] = 10.0
 	elif task_name == 'cluewsc2020':
