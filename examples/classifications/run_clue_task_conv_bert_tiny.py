@@ -108,7 +108,7 @@ for task_name in FLAGS.task_name.split(","):
 	configs["pretrained_lm_name"] = "roberta_tiny_modified_conv_bert_tiny_electra_9_new"
 	configs["vocab_file"] = "/data/albert/conv_bert_tiny_9_new/vocab.txt"
 	configs["bert_config_file"] = "/data/albert/conv_bert_tiny_9_new/bert_config_tiny_conv.json"
-	configs["init_checkpoint"] = "/data/albert/conv_bert_tiny_9_new/conv_tiny_chinese_9_model.ckpt-500000"
+	configs["init_checkpoint"] = "/data/albert/conv_bert_tiny_9_new/conv_tiny_chinese_9_model.ckpt-840000"
 	configs["verbose"] = 1
 
 	configs["do_train"] = True
