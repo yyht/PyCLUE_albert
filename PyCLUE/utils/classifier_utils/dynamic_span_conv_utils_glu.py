@@ -1,7 +1,7 @@
 
 import tensorflow as tf
 import numpy as np
-from model import bert_utils
+from . import bert_utils
 
 def dropout(input_tensor, dropout_prob, dropout_name=None):
 	"""Perform dropout.
