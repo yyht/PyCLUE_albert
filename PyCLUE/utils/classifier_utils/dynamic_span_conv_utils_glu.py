@@ -217,15 +217,15 @@ def dynamic_conv_layer(from_tensor,
 	from_tensor_mask = tf.cast(from_tensor_mask, dtype=tf.float32)
 
 	if len(from_shape) == 3:
-		query_layer *= from_tensor_mask
+		query_layer_transpose *= from_tensor_mask
 	else:
-		query_layer = tf.reshape(
-				from_tensor,
+		query_layer_transpose = tf.reshape(
+			    from_tensor,
 				[batch_size, from_seq_length, hidden_size])
-		query_layer *= from_tensor_mask
+		query_layer_transpose *= from_tensor_mask
 
 	conv_key_layer = depthwise_separable_convolution(
-						inputs=query_layer,
+						inputs=query_layer_transpose,
 						kernel_size=[kernel_size, 1],
 						num_filters=num_attention_heads*attention_head_size,
 						scope="conv_key",
