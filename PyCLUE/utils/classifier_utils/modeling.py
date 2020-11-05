@@ -252,7 +252,7 @@ class BertModel(object):
 							num_train_steps=num_train_steps,
 							is_training=is_training,
 							structural_attentions=structural_attentions)
-				elif config.model_type == 'hard_attention_utils':
+				elif config.model_type == 'hard_attention':
 					self.all_encoder_layers = hard_attention_utils.transformer_model(
 							input_tensor=self.embedding_output,
 							attention_mask=attention_mask,
