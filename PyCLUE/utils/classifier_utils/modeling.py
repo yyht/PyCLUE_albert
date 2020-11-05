@@ -30,7 +30,7 @@ from . import bert_utils
 from . import structural_attention
 from . import dynamic_span_conv_utils
 from . import dynamic_span_conv_utils_glu
-from . import hard_attetion_utils
+from . import hard_attention_utils
 
 class BertConfig(object):
 	"""Configuration for `BertModel`."""
