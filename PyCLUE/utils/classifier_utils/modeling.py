@@ -265,9 +265,7 @@ class BertModel(object):
 							attention_probs_dropout_prob=config.attention_probs_dropout_prob,
 							initializer_range=config.initializer_range,
 							do_return_all_layers=True,
-							share_parameter_across_layers=False,
 							attention_fixed_size=config.attention_fixed_size,
-							num_train_steps=num_train_steps,
 							is_training=is_training,
 							structural_attentions=structural_attentions)
 					tf.logging.info("==apply hard attention based on vector norm==")
