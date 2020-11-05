@@ -30,6 +30,7 @@ from . import bert_utils
 from . import structural_attention
 from . import dynamic_span_conv_utils
 from . import dynamic_span_conv_utils_glu
+from . import hard_attetion_utils
 
 class BertConfig(object):
 	"""Configuration for `BertModel`."""
@@ -251,6 +252,26 @@ class BertModel(object):
 							num_train_steps=num_train_steps,
 							is_training=is_training,
 							structural_attentions=structural_attentions)
+				elif config.model_type == 'hard_attention_utils':
+					self.all_encoder_layers = hard_attention_utils.transformer_model(
+							input_tensor=self.embedding_output,
+							attention_mask=attention_mask,
+							hidden_size=config.hidden_size,
+							num_hidden_layers=config.num_hidden_layers,
+							num_attention_heads=config.num_attention_heads,
+							intermediate_size=config.intermediate_size,
+							intermediate_act_fn=get_activation(config.hidden_act),
+							hidden_dropout_prob=config.hidden_dropout_prob,
+							attention_probs_dropout_prob=config.attention_probs_dropout_prob,
+							initializer_range=config.initializer_range,
+							do_return_all_layers=True,
+							share_parameter_across_layers=False,
+							attention_fixed_size=config.attention_fixed_size,
+							num_train_steps=num_train_steps,
+							is_training=is_training,
+							structural_attentions=structural_attentions)
+					tf.logging.info("==apply hard attention based on vector norm==")
+
 				elif config.model_type == 'conv_transformer':
 					self.all_encoder_layers = conv_transformer_model(
 						input_tensor=self.embedding_output,
