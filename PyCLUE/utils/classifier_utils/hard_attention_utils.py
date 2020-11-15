@@ -339,7 +339,7 @@ def hard_attention_core(attention_scores,
 	# [batch_size, 1, 1]
 	value_len = 1e-10+tf.cast(tf.reduce_sum(value_mask, axis=-1, keep_dims=True), dtype=tf.float32)
 	# [batch_size, 1, to_seq_length]
-	value_adder = (1.0 - tf.cast(value_mask, tf.float32)) * -10000.0
+	value_adder = (1.0 - tf.cast(value_mask, tf.float32)) * -1e20
 
 	# Since we are adding it to the raw scores before the softmax, this is
 	# effectively the same as removing these entirely.

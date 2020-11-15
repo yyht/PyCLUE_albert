@@ -31,6 +31,7 @@ from . import structural_attention
 from . import dynamic_span_conv_utils
 from . import dynamic_span_conv_utils_glu
 from . import hard_attention_utils
+from . import conv_bert_uitls
 
 class BertConfig(object):
 	"""Configuration for `BertModel`."""
@@ -294,6 +295,23 @@ class BertModel(object):
 						from_mask=input_mask,
 						to_mask=input_mask,
 						dynamic_cnn_type=config.dynamic_cnn_type)
+				elif config.model_type == 'official_conv_transformer':
+					self.all_encoder_layers = conv_bert_uitls.transformer_model(
+						input_tensor=self.embedding_output,
+						attention_mask=attention_mask,
+						hidden_size=config.hidden_size,
+						num_hidden_layers=config.num_hidden_layers,
+						num_attention_heads=config.num_attention_heads,
+						intermediate_size=config.intermediate_size,
+						intermediate_act_fn=get_activation(config.hidden_act),
+						hidden_dropout_prob=config.hidden_dropout_prob,
+						attention_probs_dropout_prob=config.attention_probs_dropout_prob,
+						initializer_range=config.initializer_range,
+						do_return_all_layers=True,
+                      	conv_kernel_size=config.get('kernel_size', 9),
+						head_ratio=config.get('head_ratio', 2),
+                      	conv_type=config.get('conv_type', "sdconv"))
+					tf.logging.info("== apply official_conv_transformer ==")
 
 			self.sequence_output = self.all_encoder_layers[-1]
 			# The "pooler" converts the encoded sequence tensor of shape
