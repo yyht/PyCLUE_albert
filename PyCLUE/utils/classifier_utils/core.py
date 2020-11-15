@@ -491,7 +491,7 @@ def create_model(
 			input_ids=input_ids,
 			input_mask=input_mask,
 			token_type_ids=segment_ids,
-                        scope="electra",
+                        scope="bert",
 			use_one_hot_embeddings=use_one_hot_embeddings,
                         num_train_steps=num_train_steps,
 			structural_attentions="none" #"structural_attentions"
