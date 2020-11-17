@@ -56,7 +56,9 @@ class BertConfig(object):
 							 kernel_size=9,
 							 num_attention_heads_scale=False,
 							 share_or_not=True,
-							 dynamic_cnn_type="conv_bert"):
+							 dynamic_cnn_type="conv_bert",
+							 conv_type='sdconv',
+							 head_ratio=2):
 		"""Constructs BertConfig.
 
 		Args:
@@ -101,6 +103,8 @@ class BertConfig(object):
 		self.kernel_size = kernel_size
 		self.share_or_not = share_or_not
 		self.dynamic_cnn_type = dynamic_cnn_type
+		self.conv_type = conv_type
+		self.head_ratio = head_ratio
 
 	@classmethod
 	def from_dict(cls, json_object):
@@ -308,9 +312,9 @@ class BertModel(object):
 						attention_probs_dropout_prob=config.attention_probs_dropout_prob,
 						initializer_range=config.initializer_range,
 						do_return_all_layers=True,
-                      	conv_kernel_size=config.get('kernel_size', 9),
-						head_ratio=config.get('head_ratio', 2),
-                      	conv_type=config.get('conv_type', "sdconv"))
+                      	conv_kernel_size=config.kernel_size,
+						head_ratio=config.head_ratio,
+                      	conv_type=config.conv_type)
 					tf.logging.info("== apply official_conv_transformer ==")
 
 			self.sequence_output = self.all_encoder_layers[-1]
