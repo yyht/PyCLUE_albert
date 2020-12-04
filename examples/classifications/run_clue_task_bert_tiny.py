@@ -43,7 +43,7 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 20.0
+		configs["num_train_epochs"] = 10.0
 	elif task_name == 'csl':
 		configs["task_name"] = task_name
 		# train parameters
@@ -59,7 +59,7 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 20.0
+		configs["num_train_epochs"] = 10.0
 	elif task_name == 'tnews':
 		configs["task_name"] = task_name
 		# train parameters
@@ -105,10 +105,10 @@ for task_name in FLAGS.task_name.split(","):
 	#     Or you can choose the following models:
 	#         bert, bert_wwm_ext, albert_xlarge, albert_large, albert_base, albert_base_ext, 
 	#         albert_small, albert_tiny, roberta, roberta_wwm_ext, roberta_wwm_ext_large
-	configs["pretrained_lm_name"] = "roberta_tiny_span_mask_50g"
-	configs["vocab_file"] = "/data/albert/roberta_span_mask_50g/vocab.txt"
-	configs["bert_config_file"] = "/data/albert/roberta_span_mask_50g/bert_config_tiny.json"
-	configs["init_checkpoint"] = "/data/albert/roberta_span_mask_50g/roberta_tiny_50G_model.ckpt-1160000"
+	configs["pretrained_lm_name"] = "roberta_tiny_span_mask_50g_whole"
+	configs["vocab_file"] = "/data/albert/roberta_tiny_span_mask_50g/vocab.txt"
+	configs["bert_config_file"] = "/data/albert/roberta_tiny_span_mask_50g/bert_config_tiny.json"
+	configs["init_checkpoint"] = "/data/albert/roberta_tiny_span_mask_50g/roberta_tiny_50G_whole_model.ckpt-1990000"
 	configs["verbose"] = 1
 
 	configs["do_train"] = True
