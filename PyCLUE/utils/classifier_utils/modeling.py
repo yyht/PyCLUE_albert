@@ -1202,7 +1202,7 @@ def attention_layer(from_tensor,
 				context_layer,
 				[batch_size, from_seq_length, num_attention_heads * attention_head_size])
 
-	return context_layer
+	return [context_layer, attention_scores]
 
 
 def transformer_model(input_tensor,
@@ -1311,7 +1311,7 @@ def transformer_model(input_tensor,
 					else:
 						structural_attentions_args = "none"
 
-					attention_head = attention_layer(
+					[attention_head, attention_scores] = attention_layer(
 							from_tensor=layer_input,
 							to_tensor=layer_input,
 							attention_mask=attention_mask,
@@ -1589,7 +1589,7 @@ def conv_transformer_model(input_tensor,
 						structural_attentions_args = structural_attentions
 					else:
 						structural_attentions_args = "none"
-					attention_head  = attention_layer(
+					[attention_head, attention_scores]  = attention_layer(
 							from_tensor=layer_input,
 							to_tensor=layer_input,
 							attention_mask=attention_mask,
@@ -1824,7 +1824,7 @@ def prelln_transformer_model(input_tensor,
 					layer_input_pre = layer_norm(layer_input)
 
 				with tf.variable_scope("self"):
-					attention_head = attention_layer(
+					[attention_head, attention_scores] = attention_layer(
 							from_tensor=layer_input_pre,
 							to_tensor=layer_input_pre,
 							attention_mask=attention_mask,
