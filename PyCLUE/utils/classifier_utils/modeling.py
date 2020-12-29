@@ -59,7 +59,8 @@ class BertConfig(object):
 							 dynamic_cnn_type="conv_bert",
 							 conv_type='sdconv',
 							 conv_method='gate',
-							 head_ratio=2):
+							 head_ratio=2,
+							 if_pre_attention_scores=False):
 		"""Constructs BertConfig.
 
 		Args:
@@ -107,6 +108,7 @@ class BertConfig(object):
 		self.conv_type = conv_type
 		self.head_ratio = head_ratio
 		self.conv_method = conv_method
+		self.if_pre_attention_scores = if_pre_attention_scores
 
 	@classmethod
 	def from_dict(cls, json_object):
@@ -258,7 +260,8 @@ class BertModel(object):
 							attention_fixed_size=config.attention_fixed_size,
 							num_train_steps=num_train_steps,
 							is_training=is_training,
-							structural_attentions=structural_attentions)
+							structural_attentions=structural_attentions,
+							if_pre_attention_scores=if_pre_attention_scores)
 				elif config.model_type == 'hard_attention':
 					self.all_encoder_layers = hard_attention_utils.transformer_model(
 							input_tensor=self.embedding_output,
@@ -956,7 +959,9 @@ def attention_layer(from_tensor,
 										structural_attentions="none",
 										is_training=False,
 										num_train_steps=None,
-                                                                                dropout_name=None):
+                                        dropout_name=None,
+                                        if_pre_attention_scores=False,
+                                        pre_attention_scores=None):
 	"""Performs multi-headed attention from `from_tensor` to `to_tensor`.
 
 	This is an implementation of multi-headed attention based on "Attention
@@ -1141,6 +1146,11 @@ def attention_layer(from_tensor,
 			# Since we are adding it to the raw scores before the softmax, this is
 			# effectively the same as removing these entirely.
 			attention_scores += adder
+			if if_pre_attention_scores:
+				if pre_attention_scores is not None:
+					tf.logging.info("== apply pre_attention_scores ==")
+					attention_scores += pre_attention_scores
+
 
 	# if attention_mask is not None:
 	# 	# `attention_mask` = [B, 1, F, T]
@@ -1206,7 +1216,9 @@ def transformer_model(input_tensor,
 											attention_fixed_size=None,
 											is_training=False,
 											structural_attentions="none",
-											num_train_steps=None):
+											num_train_steps=None,
+											if_pre_attention_scores=False,
+											pre_attention_scores=None):
 	"""Multi-headed, multi-layer Transformer from "Attention is All You Need".
 
 	This is almost an exact implementation of the original Transformer encoder.
@@ -1276,6 +1288,7 @@ def transformer_model(input_tensor,
 	prev_output = reshape_to_matrix(input_tensor)
 
 	all_layer_outputs = []
+	attention_scores = None
 	for layer_idx in range(num_hidden_layers):
 		if share_parameter_across_layers:
 				name_variable_scope="layer_shared"
@@ -1310,7 +1323,9 @@ def transformer_model(input_tensor,
 							attention_fixed_size=attention_fixed_size,
 							structural_attentions=structural_attentions_args,
 							is_training=is_training,
-							num_train_steps=num_train_steps)
+							num_train_steps=num_train_steps,
+							if_pre_attention_scores=if_pre_attention_scores,
+							pre_attention_scores=attention_scores)
 					attention_heads.append(attention_head)
 
 				attention_output = None
