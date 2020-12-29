@@ -261,7 +261,7 @@ class BertModel(object):
 							num_train_steps=num_train_steps,
 							is_training=is_training,
 							structural_attentions=structural_attentions,
-							if_pre_attention_scores=if_pre_attention_scores)
+							if_pre_attention_scores=config.if_pre_attention_scores)
 				elif config.model_type == 'hard_attention':
 					self.all_encoder_layers = hard_attention_utils.transformer_model(
 							input_tensor=self.embedding_output,
