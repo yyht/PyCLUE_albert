@@ -1146,6 +1146,10 @@ def attention_layer(from_tensor,
 			# Since we are adding it to the raw scores before the softmax, this is
 			# effectively the same as removing these entirely.
 			attention_scores += adder
+			tf.logging.info(if_pre_attention_scores)
+			tf.logging.info("==if_pre_attention_scores==")
+			tf.logging.info(pre_attention_scores)
+			tf.logging.info("==pre_attention_scores==")
 			if if_pre_attention_scores:
 				if pre_attention_scores is not None:
 					tf.logging.info("== apply pre_attention_scores ==")
@@ -1217,8 +1221,7 @@ def transformer_model(input_tensor,
 											is_training=False,
 											structural_attentions="none",
 											num_train_steps=None,
-											if_pre_attention_scores=False,
-											pre_attention_scores=None):
+											if_pre_attention_scores=False):
 	"""Multi-headed, multi-layer Transformer from "Attention is All You Need".
 
 	This is almost an exact implementation of the original Transformer encoder.
