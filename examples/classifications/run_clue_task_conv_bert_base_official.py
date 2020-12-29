@@ -41,9 +41,9 @@ for task_name in FLAGS.task_name.split(","):
 		# train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 1e-4
+		configs["learning_rate"] = 5e-5
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 5.0
 	elif task_name == 'csl':
 		configs["task_name"] = task_name
 		# train parameters
@@ -57,17 +57,17 @@ for task_name in FLAGS.task_name.split(","):
 		# train parameters
 		configs["max_seq_length"] = 256
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 1e-4
+		configs["learning_rate"] = 5e-5
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 5.0
 	elif task_name == 'tnews':
 		configs["task_name"] = task_name
 		# train parameters
 		configs["max_seq_length"] = 256
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 1e-4
+		configs["learning_rate"] = 5e-5
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 5.0
 	elif task_name == 'wsc':
 		configs["task_name"] = task_name
 		# train parameters
@@ -81,17 +81,17 @@ for task_name in FLAGS.task_name.split(","):
                 # train parameters
                 configs["max_seq_length"] = 128
                 configs["train_batch_size"] = 32
-                configs["learning_rate"] = 1e-4
+                configs["learning_rate"] = 5e-5
                 configs["warmup_proportion"] = 0.1
-                configs["num_train_epochs"] = 10.0
+                configs["num_train_epochs"] = 5.0
 	elif task_name == 'xnli':
 		configs["task_name"] = task_name
                 # train parameters
 		configs["max_seq_length"] = 128
 		configs["train_batch_size"] = 32
-		configs["learning_rate"] = 1e-4
+		configs["learning_rate"] = 5e-5
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 5.0
 	elif task_name == 'cluewsc2020':
                 configs["task_name"] = task_name
                 # train parameters
@@ -105,10 +105,10 @@ for task_name in FLAGS.task_name.split(","):
 	#     Or you can choose the following models:
 	#         bert, bert_wwm_ext, albert_xlarge, albert_large, albert_base, albert_base_ext, 
 	#         albert_small, albert_tiny, roberta, roberta_wwm_ext, roberta_wwm_ext_large
-	configs["pretrained_lm_name"] = "roberta_conv_tiny_9_official_gate"
-	configs["vocab_file"] = "/data/albert/official_conv_bert_tint_9_50g/vocab.txt"
-	configs["bert_config_file"] = "/data/albert/official_conv_bert_tint_9_50g/bert_config_tiny_official_conv.json"
-	configs["init_checkpoint"] = "/data/albert/official_conv_bert_tint_9_50g/conv_roberta_tiny_9_50G_whole_model.ckpt-1990000"
+	configs["pretrained_lm_name"] = "roberta_conv_base_9_official"
+	configs["vocab_file"] = "/data/albert/official_conv_bert_base_50g/vocab.txt"
+	configs["bert_config_file"] = "/data/albert/official_conv_bert_base_50g/bert_config_base_official_conv.json"
+	configs["init_checkpoint"] = "/data/albert/official_conv_bert_base_50g/official_conv_roberta_base_9_50G_whole_model.ckpt-1220000"
 	configs["verbose"] = 1
 
 	configs["do_train"] = True

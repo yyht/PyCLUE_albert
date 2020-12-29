@@ -526,7 +526,7 @@ def create_model(
 			token_type_ids=segment_ids,
 			use_one_hot_embeddings=use_one_hot_embeddings,
 			scope='electra',
-			embedding_size=128,
+			embedding_size=768,
 			num_train_steps=num_train_steps
 		)
 	elif model_type.startswith("light_dgcnn"):

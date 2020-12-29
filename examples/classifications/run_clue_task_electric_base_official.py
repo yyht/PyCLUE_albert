@@ -3,7 +3,7 @@ import sys
 sys.path.append("../..")
 from PyCLUE.tasks.run_classifier import my_clue_tasks, configs
 import tensorflow as tf
-tf.disable_v2_behavior()
+
 # assign GPU devices or CPU devices
 # os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 
@@ -15,7 +15,7 @@ FLAGS = flags.FLAGS
 # tf.logging.set_verbosity(tf.logging.ERROR)
 
 flags.DEFINE_string("task_name", "", "oss buckets")
-flags.DEFINE_string("gpu_id", "4", "oss buckets")
+flags.DEFINE_string("gpu_id", "0", "oss buckets")
 
 os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.gpu_id
 
@@ -28,6 +28,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = FLAGS.gpu_id
 #         CLUE: afqmc, cmnli, copa, csl, iflytek, tnews, wsc
 for task_name in FLAGS.task_name.split(","):
 	from PyCLUE.tasks.run_classifier import configs
+	print(configs)
 	if task_name == 'afqmc':
 		configs["task_name"] = task_name
 		# train parameters
@@ -43,7 +44,7 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 3.0
 	elif task_name == 'csl':
 		configs["task_name"] = task_name
 		# train parameters
@@ -51,7 +52,7 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 3.0
 	elif task_name == 'iflytek':
 		configs["task_name"] = task_name
 		# train parameters
@@ -59,7 +60,7 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 3.0
 	elif task_name == 'tnews':
 		configs["task_name"] = task_name
 		# train parameters
@@ -67,15 +68,15 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 3.0
 	elif task_name == 'wsc':
 		configs["task_name"] = task_name
 		# train parameters
-		configs["max_seq_length"] = 128
-		configs["train_batch_size"] = 8
+		configs["max_seq_length"] = 256
+		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 3.0
 	elif task_name == 'lcqmc':
                 configs["task_name"] = task_name
                 # train parameters
@@ -83,7 +84,7 @@ for task_name in FLAGS.task_name.split(","):
                 configs["train_batch_size"] = 32
                 configs["learning_rate"] = 1e-4
                 configs["warmup_proportion"] = 0.1
-                configs["num_train_epochs"] = 10.0
+                configs["num_train_epochs"] = 3.0
 	elif task_name == 'xnli':
 		configs["task_name"] = task_name
                 # train parameters
@@ -91,30 +92,23 @@ for task_name in FLAGS.task_name.split(","):
 		configs["train_batch_size"] = 32
 		configs["learning_rate"] = 1e-4
 		configs["warmup_proportion"] = 0.1
-		configs["num_train_epochs"] = 10.0
-	elif task_name == 'cluewsc2020':
-                configs["task_name"] = task_name
-                # train parameters
-                configs["max_seq_length"] = 128
-                configs["train_batch_size"] = 32
-                configs["learning_rate"] = 3e-4
-                configs["warmup_proportion"] = 0.1
-                configs["num_train_epochs"] = 10.0
+		configs["num_train_epochs"] = 3.0
 	# pretrained_lm_name: 
 	#     If None, should assign `vocab_file`, `bert_config_file`, `init_checkpoint`.
 	#     Or you can choose the following models:
 	#         bert, bert_wwm_ext, albert_xlarge, albert_large, albert_base, albert_base_ext, 
 	#         albert_small, albert_tiny, roberta, roberta_wwm_ext, roberta_wwm_ext_large
-	configs["pretrained_lm_name"] = "roberta_conv_tiny_9_official_gate"
-	configs["vocab_file"] = "/data/albert/official_conv_bert_tint_9_50g/vocab.txt"
-	configs["bert_config_file"] = "/data/albert/official_conv_bert_tint_9_50g/bert_config_tiny_official_conv.json"
-	configs["init_checkpoint"] = "/data/albert/official_conv_bert_tint_9_50g/conv_roberta_tiny_9_50G_whole_model.ckpt-1990000"
+	configs["pretrained_lm_name"] = "electra_official_electric_final"
+	configs["vocab_file"] = "/data/albert/electric_chinese_base/vocab.txt"
+	configs["bert_config_file"] = "/data/albert/electric_chinese_base/bert_config.json"
+	configs["init_checkpoint"] = "/data/albert/electric_chinese_base/electric_base_model.ckpt-1000000"
 	configs["verbose"] = 1
 
 	configs["do_train"] = True
 	configs["do_eval"] = True
 	configs["do_predict"] = True
-	
-
+#	configs['use_layer_lr'] = True
+	print(configs)
 	my_clue_tasks(configs)
     
+
