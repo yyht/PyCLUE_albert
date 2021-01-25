@@ -492,7 +492,7 @@ def create_model(
 			input_ids=input_ids,
 			input_mask=input_mask,
 			token_type_ids=segment_ids,
-                        scope="electra",
+                        scope="bert",
 			use_one_hot_embeddings=use_one_hot_embeddings,
                         num_train_steps=num_train_steps,
 			structural_attentions="none" #"structural_attentions"
@@ -527,7 +527,7 @@ def create_model(
 			token_type_ids=segment_ids,
 			use_one_hot_embeddings=use_one_hot_embeddings,
 			scope='electra',
-			embedding_size=128,
+			embedding_size=768,
 			num_train_steps=num_train_steps
 		)
 	elif model_type.startswith("light_dgcnn"):
@@ -689,7 +689,7 @@ def model_fn_builder(model_type, bert_config, num_labels, init_checkpoint, learn
 				num_train_steps, 
 				num_warmup_steps, 
 				use_tpu,
-			  layerwise_lr_decay_power=0.0, 
+			  layerwise_lr_decay_power=0.8, 
 			  n_transformer_layers=bert_config.num_hidden_layers,
 			  task_name="task_specific/",
 			  whole_or_feature="whole")

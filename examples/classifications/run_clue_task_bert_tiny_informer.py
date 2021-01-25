@@ -105,10 +105,10 @@ for task_name in FLAGS.task_name.split(","):
 	#     Or you can choose the following models:
 	#         bert, bert_wwm_ext, albert_xlarge, albert_large, albert_base, albert_base_ext, 
 	#         albert_small, albert_tiny, roberta, roberta_wwm_ext, roberta_wwm_ext_large
-	configs["pretrained_lm_name"] = "roberta_tiny_span_mask_50g_whole"
-	configs["vocab_file"] = "/data/albert/roberta_tiny_span_mask_50g/vocab.txt"
-	configs["bert_config_file"] = "/data/albert/roberta_tiny_span_mask_50g/bert_config_tiny.json"
-	configs["init_checkpoint"] = "/data/albert/roberta_tiny_span_mask_50g/roberta_tiny_50G_whole_model.ckpt-1990000"
+	configs["pretrained_lm_name"] = "roberta_tiny_span_mask_50g_informer"
+	configs["vocab_file"] = "/data/albert/informer_roberta_tiny/vocab.txt"
+	configs["bert_config_file"] = "/data/albert/informer_roberta_tiny/bert_config_tiny_informer.json"
+	configs["init_checkpoint"] = "/data/albert/informer_roberta_tiny/roberta_tiny_50G_whole_informer_model.ckpt-1990000"
 	configs["verbose"] = 1
 
 	configs["do_train"] = True
