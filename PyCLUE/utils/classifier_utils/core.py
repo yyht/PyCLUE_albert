@@ -678,7 +678,7 @@ def model_fn_builder(model_type, bert_config, num_labels, init_checkpoint, learn
 				num_train_steps, 
 				num_warmup_steps, 
 				use_tpu,
-			  layerwise_lr_decay_power=0.0, 
+			  layerwise_lr_decay_power=0.8, 
 			  n_transformer_layers=bert_config.num_hidden_layers,
 			  task_name="task_specific/",
 			  whole_or_feature="whole")
