@@ -31,6 +31,7 @@ import tensorflow as tf
 from . import tokenization, modeling
 from . import albert_modeling
 from . import electra_modeling
+from . import modeling_tta
 from . import funnel_transformer_modeling
 from . import optimization_finetuning as optimization
 from ..configs.model_configs import PRETRAINED_LM_DICT, PRETRAINED_LM_CONFIG, PRETRAINED_LM_CKPT
@@ -546,6 +547,16 @@ def create_model(
 			use_one_hot_embeddings=use_one_hot_embeddings,
 			scope='model',
 			num_train_steps=num_train_steps
+		)
+	elif model_type.startswith("roberta_tta"):
+		model = modeling_tta.BertModel(
+			bert_config=bert_config,
+			is_training=is_training,
+			input_ids=input_ids,
+			input_mask=input_mask,
+			token_type_ids=segment_ids,
+			use_one_hot_embeddings=use_one_hot_embeddings,
+			scope='bert'
 		)
 
 	# In this demo, we are doing a simple classification task on the entire segment.
