@@ -562,7 +562,14 @@ def create_model(
 	# In this demo, we are doing a simple classification task on the entire segment.
 	#
 	# If you want to use the token-level output, use model.get_sequence_output() instead.
-	output_layer = model.get_pooled_output()
+	if not model_type.startswith("roberta_tta"):
+		output_layer = model.get_pooled_output()
+	else:
+		sequence_output_layer = model.get_sequence_output()
+		input_mask_ = tf.expand_dims(input_mask, axis=-1)
+		input_mask_ = tf.cast(input_mask_, dtype=tf.float32)
+		output_layer = tf.reduce_sum(sequence_output_layer*input_mask_, axis=1)
+		output_layer /= (1e-10+tf.reduce_sum(input_mask_, axis=1))
 
 	hidden_size = output_layer.shape[-1].value
 	
